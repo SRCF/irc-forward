@@ -33,6 +33,7 @@ rl.on('line', line => {
         client.write(`PONG ${line.slice(5)}`);
     }
 });
+client.on('close', () => process.exit(1));
 
 // http server
 const http = require('http');

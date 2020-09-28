@@ -20,10 +20,16 @@ const client = net.connect({
     port: PORT
 });
 
-client.write(`NICK ${NICK}\r\n`);
-client.write(`USER ${NICK} 0 * :${NICK}\r\n`);
+function send(msg) {
+    console.log(msg);
+    client.write(msg + '\r\n');
+}
+send(`NICK ${NICK}`);
+send(`USER ${NICK} 0 * :${NICK}`);
+// Don't leak password to log
+console.log(`PRIVMSG NickServ :IDENTIFY hunter2`);
 client.write(`PRIVMSG NickServ :IDENTIFY ${PASSWORD}\r\n`);
-client.write(`JOIN ${CHANNEL}\r\n`);
+send(`JOIN ${CHANNEL}`);
 
 const rl = readline.createInterface({
     input: client,
@@ -31,6 +37,8 @@ const rl = readline.createInterface({
 rl.on('line', line => {
     if (line.startsWith('PING :')) {
         client.write(`PONG ${line.slice(5)}`);
+    } else {
+        console.log(line);
     }
 });
 client.on('close', () => process.exit(1));
@@ -51,7 +59,7 @@ http.createServer((req, res) => {
             return;
         }
         for (const part of line.match(LENGTH_REGEX)) {
-            client.write(`PRIVMSG ${CHANNEL} :${part}\r\n`);
+            send(`PRIVMSG ${CHANNEL} :${part}`);
         }
     });
     lines.on('close', () => {

@@ -36,7 +36,7 @@ const rl = readline.createInterface({
 });
 rl.on('line', line => {
     if (line.startsWith('PING :')) {
-        client.write(`PONG ${line.slice(5)}`);
+        client.write(`PONG ${line.slice(5)}\r\n`);
     } else {
         console.log(line);
     }

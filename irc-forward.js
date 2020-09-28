@@ -4,7 +4,7 @@
 // IRC config options
 const NICK = process.env["NICK"];
 const HOST = process.env["HOST"];
-const PORT = process.env["PORT"];
+const PORT = process.env["PORT"] || 6667;
 const CHANNEL = process.env["CHANNEL"];
 const PASSWORD = process.env["PASSWORD"];
 

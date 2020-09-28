@@ -21,7 +21,7 @@ const client = net.connect({
 });
 
 client.write(`NICK ${NICK}\r\n`);
-client.write(`USER ${NICK} ${NICK} ${NICK} :${NICK}\r\n`);
+client.write(`USER ${NICK} 0 * :${NICK}\r\n`);
 client.write(`PRIVMSG NickServ :IDENTIFY ${PASSWORD}\r\n`);
 client.write(`JOIN ${CHANNEL}\r\n`);
 

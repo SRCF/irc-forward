@@ -8,7 +8,7 @@ const PORT = process.env["PORT"] || 6667;
 const CHANNEL = process.env["CHANNEL"];
 const PASSWORD = process.env["PASSWORD"];
 
-// Port for incoming http requests
+// Port for incoming messages
 const LISTEN_PORT = process.env["LISTEN_PORT"];
 
 // irc client
@@ -44,6 +44,8 @@ rl.on('line', line => {
     }
 });
 client.on('close', () => process.exit(1));
+
+// Listening server
 
 // IRC messages have a max length of 512 bytes
 const MAX_LENGTH = 512 - `PRIVMSG ${CHANNEL} :\r\n`.length;

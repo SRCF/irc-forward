@@ -20,15 +20,17 @@ const client = net.connect({
     port: PORT
 });
 
-function send(msg) {
-    console.log(msg);
+function send(msg, log=true) {
+    if (log) {
+        console.log(msg);
+    }
     client.write(msg + '\r\n');
 }
 send(`NICK ${NICK}`);
 send(`USER ${NICK} 0 * :${NICK}`);
-// Don't leak password to log
-console.log(`PRIVMSG NickServ :IDENTIFY hunter2`);
-client.write(`PRIVMSG NickServ :IDENTIFY ${PASSWORD}\r\n`);
+if (PASSWORD !== undefined) {
+    send(`PRIVMSG NickServ :IDENTIFY ${PASSWORD}`, false);
+}
 send(`JOIN ${CHANNEL}`);
 
 const rl = readline.createInterface({
@@ -36,7 +38,7 @@ const rl = readline.createInterface({
 });
 rl.on('line', line => {
     if (line.startsWith('PING :')) {
-        client.write(`PONG ${line.slice(5)}\r\n`);
+        send(`PONG ${line.slice(5)}`, false);
     } else {
         console.log(line);
     }
@@ -52,9 +54,6 @@ net.createServer(socket => {
         input: socket
     });
     lines.on('line', line => {
-        if (line === '') {
-            return;
-        }
         for (const part of line.match(LENGTH_REGEX)) {
             send(`PRIVMSG ${CHANNEL} :${part}`);
         }

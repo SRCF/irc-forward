@@ -43,16 +43,13 @@ rl.on('line', line => {
 });
 client.on('close', () => process.exit(1));
 
-// http server
-const http = require('http');
-
 // IRC messages have a max length of 512 bytes
 const MAX_LENGTH = 512 - `PRIVMSG ${CHANNEL} :\r\n`.length;
 const LENGTH_REGEX = new RegExp(`.{1,${MAX_LENGTH}}`, 'g');
 
-http.createServer((req, res) => {
+net.createServer(socket => {
     const lines = readline.createInterface({
-        input: req
+        input: socket
     });
     lines.on('line', line => {
         if (line === '') {
@@ -61,9 +58,5 @@ http.createServer((req, res) => {
         for (const part of line.match(LENGTH_REGEX)) {
             send(`PRIVMSG ${CHANNEL} :${part}`);
         }
-    });
-    lines.on('close', () => {
-        res.writeHead(200);
-        res.end('');
     });
 }).listen(LISTEN_PORT, 'localhost');

@@ -48,16 +48,21 @@ client.on('close', () => process.exit(1));
 // Listening server
 
 // IRC messages have a max length of 512 bytes
-const MAX_LENGTH = 512 - `PRIVMSG ${CHANNEL} :\r\n`.length;
+const MAX_LENGTH = 512 - `PRIVMSG ${CHANNEL} :  \r\n`.length;
 const LENGTH_REGEX = new RegExp(`.{1,${MAX_LENGTH}}`, 'g');
 
 net.createServer(socket => {
     const lines = readline.createInterface({
         input: socket
     });
+    let first = true;
     lines.on('line', line => {
-        for (const part of line.match(LENGTH_REGEX)) {
-            send(`PRIVMSG ${CHANNEL} :${part}`);
+        for (const part of line.trim().match(LENGTH_REGEX)) {
+            if (first)
+                send(`PRIVMSG ${CHANNEL} :${part}`);
+            else
+                send(`PRIVMSG ${CHANNEL} :  ${part}`);
+            first = false;
         }
     });
 }).listen(LISTEN_PORT, 'localhost');
